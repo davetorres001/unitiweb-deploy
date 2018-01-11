@@ -210,8 +210,16 @@ class DeployCommandBase extends Command
     {
         assert(valid_num_args());
 
+        $env = $this->config->getEnvironment();
+        $namespace = $env['Namespace'] ?? '';
+
+        if (substr($namespace, -1) !== '\\') {
+            $namespace = $namespace . '\\';
+        }
+
         foreach ($this->processes[$stage][$prePost] as $class) {
-            $process = new $class($this->config, $this->output);
+            $fullClass = $namespace . 'Process\\' . $class;
+            $process = new $fullClass($this->config, $this->output);
             assert($process instanceof ProcessInterface);
             $process->execute();
         }
