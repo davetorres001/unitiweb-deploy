@@ -25,6 +25,11 @@ class DeployCommandBase extends Command
     use LockableTrait;
 
     /**
+     * @var string
+     */
+    protected $configPath;
+
+    /**
      * @var Config
      */
     protected $config;
@@ -38,6 +43,13 @@ class DeployCommandBase extends Command
      * @var array
      */
     protected $processes;
+
+    public function __construct(string $configPath = null)
+    {
+        parent::__construct(null);
+
+        $this->configPath = $configPath;
+    }
 
     /**
      * Configure the deploy command
@@ -64,7 +76,7 @@ class DeployCommandBase extends Command
         }
 
         // Load the configuration
-        $this->config = new Config($this->output);
+        $this->config = new Config($this->output, null, $this->configPath);
         $this->config->load();
         $this->processes = $this->config->getProcesses();
 
@@ -198,8 +210,7 @@ class DeployCommandBase extends Command
     {
         assert(valid_num_args());
 
-        foreach ($this->processes[$stage][$prePost] as $processClass) {
-            $class = __NAMESPACE__ . '\\Process\\' . $processClass;
+        foreach ($this->processes[$stage][$prePost] as $class) {
             $process = new $class($this->config, $this->output);
             assert($process instanceof ProcessInterface);
             $process->execute();

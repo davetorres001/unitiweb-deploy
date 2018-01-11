@@ -22,6 +22,11 @@ class DeployConfigCommand extends Command
     use LockableTrait;
 
     /**
+     * @var string
+     */
+    protected $configPath;
+
+    /**
      * @var Config
      */
     protected $config;
@@ -40,6 +45,13 @@ class DeployConfigCommand extends Command
      * @var array
      */
     protected $processes;
+
+    public function __construct(string $configPath = null)
+    {
+        parent::__construct(null);
+
+        $this->configPath = $configPath;
+    }
 
     /**
      * Configure the deploy command
@@ -67,7 +79,7 @@ class DeployConfigCommand extends Command
         }
 
         // Load the configuration
-        $this->config = new Config($this->output);
+        $this->config = new Config($this->output, null, $this->configPath);
         $this->config->load();
         $this->processes = $this->config->getProcesses();
 

@@ -4,44 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "01078dcd778b1b88741724b48f22a2e2",
+    "content-hash": "6cd067d8427608d9a4ab51fadf1d3d35",
     "packages": [
-        {
-            "name": "leaguefolio/utilities",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "git@github.com:davetorres001/leaguefolio-utilities.git",
-                "reference": "72e124b2412cf957de29392bf9ab6e9685c118c1"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/davetorres001/leaguefolio-utilities/zipball/72e124b2412cf957de29392bf9ab6e9685c118c1",
-                "reference": "72e124b2412cf957de29392bf9ab6e9685c118c1",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.5.9"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "": "src/"
-                },
-                "files": [
-                    "src/functions/typeFunctions.php",
-                    "src/functions/dbcFunctions.php"
-                ]
-            },
-            "license": [
-                "proprietary"
-            ],
-            "support": {
-                "source": "https://github.com/davetorres001/leaguefolio-utilities/tree/1.0.1",
-                "issues": "https://github.com/davetorres001/leaguefolio-utilities/issues"
-            },
-            "time": "2017-10-29 02:44:02"
-        },
         {
             "name": "psr/log",
             "version": "1.0.2",
@@ -489,14 +453,48 @@
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
             "time": "2018-01-03T07:37:34+00:00"
+        },
+        {
+            "name": "unitiweb/dbc-utility",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:davetorres001/unitiweb-dbc-utility.git",
+                "reference": "478162b1e500c2733ee1ba6374654e3c4ff1d0a2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/davetorres001/unitiweb-dbc-utility/zipball/478162b1e500c2733ee1ba6374654e3c4ff1d0a2",
+                "reference": "478162b1e500c2733ee1ba6374654e3c4ff1d0a2",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.5.9"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "": "src/"
+                },
+                "files": [
+                    "src/functions/typeFunctions.php",
+                    "src/functions/dbcFunctions.php"
+                ]
+            },
+            "license": [
+                "proprietary"
+            ],
+            "support": {
+                "source": "https://github.com/davetorres001/unitiweb-dbc-utility/tree/1.0.0",
+                "issues": "https://github.com/davetorres001/unitiweb-dbc-utility/issues"
+            },
+            "time": "2018-01-11T18:04:37+00:00"
         }
     ],
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "leaguefolio/utilities": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],

@@ -16,7 +16,6 @@
         }
     },
     "require": {
-        "symfony/console": "^3.3",
         "unitiweb/dbc-utility": "^1.0",
         "symfony/yaml": "^3.3",
         "symfony/filesystem": "^3.3",
@@ -27,6 +26,5 @@
     "scripts": {
         "post-install-cmd": [],
         "post-update-cmd": []
-    },
-    "bin": ["bin/console"]
+    }
 }

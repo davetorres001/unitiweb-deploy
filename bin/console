@@ -1,15 +1,19 @@
 #!/usr/bin/env php
 <?php
 
+print_r(__DIR__); exit;
+
 require dirname(__DIR__) . '/vendor/autoload.php';
+
+
 
 use Symfony\Component\Console\Application;
 
 $application = new Application();
 
-$application->add(new Unitiweb\Deploy\DeployCommand);
-$application->add(new Unitiweb\Deploy\DeployConfigCommand);
-$application->add(new Unitiweb\Deploy\DeployConfigShowCommand);
-$application->add(new Unitiweb\Deploy\DeployRollbackCommand);
+$application->add(new \Leaguefolio\Deploy\Api\DeployCommand);
+//$application->add(new Unitiweb\Deploy\DeployConfigCommand);
+//$application->add(new Unitiweb\Deploy\DeployConfigShowCommand);
+//$application->add(new Unitiweb\Deploy\DeployRollbackCommand);
 
 $application->run();

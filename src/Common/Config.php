@@ -145,7 +145,7 @@ class Config
     {
         assert(valid_num_args());
 
-        $default = dirname(dirname(dirname(__DIR__))) . '/';
+        $default = dirname(dirname(dirname($this->configPath))) . '/';
 
         $data = [
             'Root' => $this->config['Paths']['Root'] ?? $default,

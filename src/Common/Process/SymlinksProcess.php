@@ -50,6 +50,16 @@ class SymlinksProcess implements ProcessInterface
             $origPath = $release . $file;
             $path = $paths['Shared'] . $file;
 
+            // Create shared symliny directory if it doesn't exist
+            if (!file_exists(dirname($path))) {
+                mkdir(dirname($path), 0777, true);
+            }
+
+            // Create the shared file if it doesn't exists.
+            if (!file_exists($origPath)) {
+                file_put_contents($origPath, '');
+            }
+
             if (!file_exists($path) && file_exists($origPath)) {
                 $this->process->run("cp $origPath $path");
             }
