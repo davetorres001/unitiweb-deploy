@@ -3,11 +3,11 @@
     "license": "proprietary",
     "type": "project",
     "repositories": [
-        {"type": "vcs", "url":  "https://github.com/davetorres001/leaguefolio-utilities.git"}
+        {"type": "vcs", "url":  "https://github.com/davetorres001/unitiweb-dbc-utility.git"}
     ],
     "autoload": {
         "psr-4": {
-            "Unitiweb\\Deploy\\": "app/"
+            "Unitiweb\\Deploy\\": "src/"
         }
     },
     "autoload-dev": {
@@ -17,7 +17,7 @@
     },
     "require": {
         "symfony/console": "^3.3",
-        "leaguefolio/utilities": "dev-master",
+        "unitiweb/dbc-utility": "^1.0",
         "symfony/yaml": "^3.3",
         "symfony/filesystem": "^3.3",
         "symfony/process": "^3.3",
