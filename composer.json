@@ -1,7 +1,7 @@
 {
     "name": "unitiweb/server-site-deploy",
     "license": "proprietary",
-    "type": "project",
+    "type": "library",
     "repositories": [
         {"type": "vcs", "url":  "https://github.com/davetorres001/unitiweb-dbc-utility.git"}
     ],
