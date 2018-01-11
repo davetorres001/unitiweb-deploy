@@ -60,6 +60,10 @@ class MakeLiveProcess implements ProcessInterface
             $source = substr($source, 0, -1);
         }
 
+        if (substr($source, 0, 3) === '../') {
+            $source = substr($source, 3);
+        }
+
         $this->process->run("ln -s $source $destination");
 
         $this->output->line('yellow');
