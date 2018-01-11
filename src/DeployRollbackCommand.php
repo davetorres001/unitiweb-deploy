@@ -47,7 +47,7 @@ class DeployRollbackCommand extends Command
         assert(valid_num_args());
 
         $this
-            ->setName('deploy:rollback')
+            ->setName('rollback')
             ->setDescription('Rollback to the previous deploy.')
             ->setHelp('This command will rollback to the previous deploy and delete the current.');
     }

@@ -61,7 +61,7 @@ class DeployConfigCommand extends Command
         assert(valid_num_args());
 
         $this
-            ->setName('deploy:config')
+            ->setName('config')
             ->setDescription('Configure for Deploy')
             ->setHelp('This command will help you configure the deploy process');
     }

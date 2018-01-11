@@ -89,7 +89,7 @@ class DeployConfigShowCommand extends Command
         assert(valid_num_args());
 
         $this
-            ->setName('deploy:config:show')
+            ->setName('show')
             ->setDescription('Show/Modify Configuration')
             ->setHelp('This command will show current configuration and let you modify');
     }

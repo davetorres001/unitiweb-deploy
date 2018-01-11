@@ -59,7 +59,7 @@ class DeployCommandBase extends Command
         assert(valid_num_args());
 
         $this
-            ->setName('deploy:execute')
+            ->setName('deploy')
             ->setDescription('Deploys the new repo.')
             ->setHelp('This command will pull new version, create release, and set to live');
     }
