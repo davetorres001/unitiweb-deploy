@@ -1,0 +1,31 @@
+{
+    "name": "davetorres/leaugefolio-deploy",
+    "license": "proprietary",
+    "type": "project",
+    "repositories": [
+        {"type": "vcs", "url":  "https://github.com/davetorres001/leaguefolio-utilities.git"}
+    ],
+    "autoload": {
+        "psr-4": {
+            "Unitiweb\\Deploy\\": "app/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "require": {
+        "symfony/console": "^3.3",
+        "leaguefolio/utilities": "dev-master",
+        "symfony/yaml": "^3.3",
+        "symfony/filesystem": "^3.3",
+        "symfony/process": "^3.3",
+        "symfony/lock": "^4.0"
+    },
+    "require-dev": {},
+    "scripts": {
+        "post-install-cmd": [],
+        "post-update-cmd": []
+    }
+}
