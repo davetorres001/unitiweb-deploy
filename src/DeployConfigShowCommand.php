@@ -16,6 +16,11 @@ class DeployConfigShowCommand extends Command
     use LockableTrait;
 
     /**
+     * @var string
+     */
+    protected $configPath;
+
+    /**
      * @var DeployOutput
      */
     protected $output;
@@ -29,6 +34,11 @@ class DeployConfigShowCommand extends Command
      * @var array
      */
     protected $data = [
+        'Environment:Namespace' => [
+            'type' => 'string',
+            'getter' => 'getEnvironmentNamespace',
+            'setter' => 'setEnvironmentNamespace',
+        ],
         'Environment:Name' => [
             'type' => 'string',
             'getter' => 'getEnvironmentName',
@@ -81,6 +91,13 @@ class DeployConfigShowCommand extends Command
         ],
     ];
 
+    public function __construct(string $configPath = null)
+    {
+        parent::__construct(null);
+
+        $this->configPath = $configPath;
+    }
+
     /**
      * Configure the deploy command
      */
@@ -106,7 +123,7 @@ class DeployConfigShowCommand extends Command
         $this->output = new DeployOutput($output, $input);
 
         // Load the configuration
-        $this->config = new Config;
+        $this->config = new Config($this->output, null, $this->configPath);
         $this->config->load($this->output);
 
         $this->ask();

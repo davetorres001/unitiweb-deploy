@@ -25,6 +25,11 @@ class DeployRollbackCommand extends Command
     use LockableTrait;
 
     /**
+     * @var string
+     */
+    protected $configPath;
+
+    /**
      * @var Config
      */
     protected $config;
@@ -38,6 +43,13 @@ class DeployRollbackCommand extends Command
      * @var DeployProcess
      */
     protected $process;
+
+    public function __construct(string $configPath = null)
+    {
+        parent::__construct(null);
+
+        $this->configPath = $configPath;
+    }
 
     /**
      * Configure the deploy command
@@ -62,7 +74,7 @@ class DeployRollbackCommand extends Command
         }
 
         $this->output = new DeployOutput($output, $input);
-        $this->config = new Config;
+        $this->config = new Config($this->output, null, $this->configPath);
         $this->config->load($this->output);
         $this->process = new DeployProcess($this->output, $this->config);
 

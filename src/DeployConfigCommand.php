@@ -153,6 +153,11 @@ class DeployConfigCommand extends Command
         $this->output->header('Environment Settings');
         $this->output->subHeader('Settings related to the deploy environment');
         $this->question->ask($this->config->getEnvironment(), [
+            'Namespace' => [
+                'description' => 'The namespace for the deploy',
+                'type' => 'string',
+                'callable' => function($key, $value) { $this->config->setEnvironment($key, $value); },
+            ],
             'Name' => [
                 'description' => 'The name of the environment (ie: alpha, beta, dev, prod)',
                 'type' => 'string',
@@ -583,7 +588,7 @@ class DeployConfigCommand extends Command
         $environment = $this->config->getEnvironment();
         $rows[] = [new TableCell('<info>Environment</info>', ['colspan' => 4])];
         $rows[] = new TableSeparator();
-        foreach (['Name', 'MaxReleases', 'UseSudo'] as $key) {
+        foreach (['Namespace', 'Name', 'MaxReleases', 'UseSudo'] as $key) {
             $value = $environment[$key];
             if ($key === 'UseSudo') {
                 $value = true === $environment['UseSudo'] ? 'true' : 'false';

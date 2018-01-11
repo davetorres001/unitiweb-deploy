@@ -112,6 +112,7 @@ class Config
         assert(valid_num_args());
 
         return [
+            'Namespace' => $this->config['Environment']['Namespace'] ?? '',
             'Name' => $this->config['Environment']['Name'] ?? 'prod',
             'Current' => $this->config['Environment']['Current'] ?? null,
             'MaxReleases' => (int) $this->config['Environment']['MaxReleases'] ?? 5,
@@ -128,6 +129,7 @@ class Config
         assert(valid_num_args());
 
         $this->assertType($key, $value, [
+            'Namespace' => 'string',
             'Name' => 'string',
             'Current' => 'string',
             'MaxReleases' => 'int',
@@ -145,7 +147,7 @@ class Config
     {
         assert(valid_num_args());
 
-        $default = dirname(dirname(dirname($this->configPath))) . '/';
+        $default = '../';
 
         $data = [
             'Root' => $this->config['Paths']['Root'] ?? $default,
