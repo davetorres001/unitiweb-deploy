@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace Unitiweb\Deploy\Common;
 
 use Symfony\Component\Process\Process;
-use Unitiweb\Deploy\Common\DeployOutput;
 
 class DeployProcess
 {

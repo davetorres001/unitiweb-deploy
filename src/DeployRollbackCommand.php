@@ -8,15 +8,8 @@ use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Unitiweb\Deploy\Common\Config;
-use Unitiweb\Deploy\Common\ConfigDirectoryStructure;
 use Unitiweb\Deploy\Common\DeployOutput;
 use Unitiweb\Deploy\Common\DeployProcess;
-use Unitiweb\Deploy\Common\Process\CleanupReleasesProcess;
-use Unitiweb\Deploy\Common\Process\CopyRepoProcess;
-use Unitiweb\Deploy\Common\Process\GitHubPullProcess;
-use Unitiweb\Deploy\Common\Process\MakeLiveProcess;
-use Unitiweb\Deploy\Common\Process\RemoveProcess;
-use Unitiweb\Deploy\Common\Process\SymlinksProcess;
 use Unitiweb\Deploy\Process\ComposerInstallProcess;
 use Unitiweb\Deploy\Process\ProcessInterface;
 
