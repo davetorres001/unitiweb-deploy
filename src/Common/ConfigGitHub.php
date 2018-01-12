@@ -20,18 +20,6 @@ class ConfigGitHub
         }
         $config->setGitHub('Repo', $repo);
 
-        $remote = null;
-        while (null === $remote) {
-            $remote = $output->ask("GitHub Remote? [{$config->getGitHub('Remote')}] ", $config->getGitHub('Remote'));
-        }
-        $config->setGitHub('Remote', $remote);
-
-        $branch = null;
-        while (null === $branch) {
-            $branch = $output->ask("GitHub Branch? [{$config->getGitHub('Branch')}] ", $config->getGitHub('Branch'));
-        }
-        $config->setGitHub('Branch', $branch);
-
         $output->line('yellow');
 
         return true;

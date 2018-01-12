@@ -11,6 +11,7 @@ use Unitiweb\Deploy\Common\Config;
 use Unitiweb\Deploy\Common\ConfigDirectoryStructure;
 use Unitiweb\Deploy\Common\DeployContainerTrait;
 use Unitiweb\Deploy\Common\DeployOutput;
+use Unitiweb\Deploy\Common\DeployProcess;
 use Unitiweb\Deploy\Common\Env;
 use Unitiweb\Deploy\Common\Process\CleanupReleasesProcess;
 use Unitiweb\Deploy\Common\Process\CopyRepoProcess;
@@ -44,6 +45,11 @@ class DeployCommandBase extends Command
      * @var DeployOutput
      */
     protected $output;
+
+    /**
+     * @var DeployProcess
+     */
+    protected $process;
 
     /**
      * @var array

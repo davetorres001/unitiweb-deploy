@@ -55,33 +55,5 @@ class DeployProcess
                 }
             }
         });
-
-//        if (null !== ($results = shell_exec($command))) {
-//            $lines = explode("\n", $results);
-//            foreach ($lines as $line) {
-//                $this->output->writeln($line);
-//            }
-//        }
-
-//        if (true === $sudo) {
-//            if (null !== ($results = shell_exec($command))) {
-//                $lines = explode("\n", $results);
-//                foreach ($lines as $line) {
-//                    $this->output->writeln($line);
-//                }
-//            }
-//        } else {
-//            $process = new Process($command);
-//            $process->start();
-//            $process->wait(function ($type, $buffer) {
-//                $lines = explode("\n", $buffer);
-//                foreach ($lines as $line) {
-//                    $line = trim($line);
-//                    if ($line !== '') {
-//                        $this->output->writeln('<fg=green>>>></> ' . $line);
-//                    }
-//                }
-//            });
-//        }
     }
 }

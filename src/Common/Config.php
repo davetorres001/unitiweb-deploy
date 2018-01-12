@@ -194,19 +194,17 @@ class Config
         assert(valid_num_args());
 
         return [
-            'Repo' => $this->config['GitHub']['Repo'] ?? null,
-            'Remote' => $this->config['GitHub']['Remote'] ?? 'origin',
-            'Branch' => $this->config['GitHub']['Branch'] ?? 'master',
+            'Repo' => $this->config['GitHub']['Repo'] ?? null
         ];
     }
 
     /**
      * Set github
      */
-    public function setGitHub(string $key, string $value)
+    public function setGitHub(string $key, ?string $value)
     {
         assert(valid_num_args());
-        assert(in_array($key, ['Repo', 'Remote', 'Branch']));
+        assert(in_array($key, ['Repo']));
 
         $this->config['GitHub'][$key] = $value;
     }

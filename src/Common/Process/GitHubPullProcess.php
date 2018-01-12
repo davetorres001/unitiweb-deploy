@@ -3,10 +3,13 @@ declare(strict_types=1);
 
 namespace Unitiweb\Deploy\Common\Process;
 
+use Symfony\Component\Process\Process;
 use Unitiweb\Deploy\Common\Config;
 use Unitiweb\Deploy\Common\DeployOutput;
 use Unitiweb\Deploy\Common\DeployProcess;
 use Unitiweb\Deploy\Common\Env;
+use Symfony\Component\Console\Helper\Table;
+use Symfony\Component\Console\Helper\TableSeparator;
 
 class GitHubPullProcess implements ProcessInterface
 {
@@ -48,20 +51,191 @@ class GitHubPullProcess implements ProcessInterface
         $paths = $this->env->getPaths();
         $github = $this->config->getGitHub();
 
-        $this->output->header('Pulling the Git Repo');
+        $this->output->header('GitHub: Setup');
 
         if (!is_dir($paths['Repo'] . '.git')) {
-
-            // Initialize git in the repo directory
             $this->process->run('git init', $paths['Repo']);
-
-            // Create the git remote for the repo
             $this->process->run("git remote add {$github['Remote']} {$github['Repo']}", $paths['Repo']);
         }
 
-        // Pull the git repository
-        $this->process->run("git pull {$github['Remote']} {$github['Branch']}", $paths['Repo']);
+        // Fetch all releases
+        $this->process->run("git checkout master", $paths['Repo']);
+        $this->process->run("git fetch --all", $paths['Repo']);
+        $this->output->line();
+
+        if (null !== ($release = $this->askForTag($paths['Repo']))) {
+            $this->process->run("git checkout $release", $paths['Repo']);
+        } elseif (null !== ($branch = $this->askForBranch($paths['Repo']))) {
+            $parts = explode('/', $branch);
+            $remote = $parts[0] ?? null;
+            $branch = $parts[1] ?? null;
+            if (null === $remote || null === $branch) {
+                $this->output->error('Invalid GitHub remote or branch');
+            }
+            $this->process->run("git pull $remote $branch", $paths['Repo']);
+        }
 
         $this->output->line('yellow');
+    }
+
+    /**
+     * Ask for tag
+     */
+    protected function askForTag(string $path) : ?string
+    {
+        assert(valid_num_args());
+
+        $this->output->header('GitHub: Choose Release');
+        $tags = $this->listTags($path);
+        $this->generateTagsTable($tags);
+
+        $release = null;
+        while (true) {
+            $answer = $this->output->ask('Enter the index of the tag:');
+            $selectedTag = (int) $answer;
+            if ($answer === '' || $answer === null || $selectedTag === 0) {
+                break;
+            }
+            if ($selectedTag > 0) {
+                if (isset($tags[$selectedTag])) {
+                    $release = $tags[$selectedTag];
+                    break;
+                }
+            }
+        }
+
+        return $release;
+    }
+
+    /**
+     * List Repo tags
+     */
+    protected function listTags(string $path, int $limit = 10) : array
+    {
+        assert(valid_num_args());
+
+        $tags = [];
+
+        $process = new Process("cd $path && git tag -l --sort=-v:refname");
+        $process->run();
+        $lines = explode("\n", $process->getOutput());
+
+        $i = 1;
+        foreach ($lines as $line) {
+            $line = trim($line);
+            if ($line !== '') {
+                $tags[$i] = $line;
+                if ($i === $limit) {
+                    break;
+                }
+                $i++;
+            }
+        }
+
+        return $tags;
+    }
+
+    /**
+     * Generate tags table
+     */
+    protected function generateTagsTable(array $tags)
+    {
+        assert(valid_num_args());
+
+        $table = new Table($this->output->getOutput());
+        $table->setHeaders(array('Index', 'Tag'));
+        $rows = [];
+        array_push($rows, [0, 'none (choose a branch)']);
+        array_push($rows, new TableSeparator());
+        $i = 1;
+        $c = count($tags);
+        foreach ($tags as $index => $tag) {
+            array_push($rows, [$index, $tag]);
+            if ($i < $c) {
+                array_push($rows, new TableSeparator());
+            }
+            $i++;
+        }
+        $table->setRows($rows);
+        $table->render();
+    }
+
+    /**
+     * Ask for branches
+     */
+    protected function askForBranch(string $path) : ?string
+    {
+        assert(valid_num_args());
+
+        $this->output->header('GitHub: Choose Branch');
+        $branches = $this->listBranches($path);
+        $this->generateBranchesTable($branches);
+
+        $release = null;
+        while (true) {
+            $answer = $this->output->ask('Enter the index of the branch:');
+            $selectedBranch = (int) $answer;
+            if ($selectedBranch > 0) {
+                if (isset($branches[$selectedBranch])) {
+                    $release = $branches[$selectedBranch];
+                    break;
+                }
+            }
+        }
+
+        return $release;
+    }
+
+    /**
+     * List Repo branches
+     */
+    protected function listBranches(string $path) : array
+    {
+        assert(valid_num_args());
+
+        $branches = [];
+
+        $process = new Process("cd $path && git branch -r --sort=-v:refname");
+        $process->run();
+        $lines = explode("\n", $process->getOutput());
+
+        $i = 1;
+        foreach ($lines as $line) {
+            $line = trim($line);
+            if ($line !== '') {
+                if (substr($line, 0, 2) === '* ') {
+                    $line = substr($line, 2);
+                }
+                $branches[$i] = $line;
+                $i++;
+            }
+        }
+
+        return $branches;
+    }
+    /**
+     * Generate branches table
+     */
+    protected function generateBranchesTable(array $branches)
+    {
+        assert(valid_num_args());
+
+        $table = new Table($this->output->getOutput());
+        $table->setHeaders(array('Index', 'Remote', 'Branch'));
+        $rows = [];
+        $i = 1;
+        $c = count($branches);
+        foreach ($branches as $index => $branch) {
+            $parts = explode('/', $branch);
+            if (count($parts) === 2) {
+                array_push($rows, [$index, $parts[0], $parts[1]]);
+                if ($i < $c) {
+                    array_push($rows, new TableSeparator());
+                }
+                $i++;
+            }
+        }
+        $table->setRows($rows);
+        $table->render();
     }
 }
