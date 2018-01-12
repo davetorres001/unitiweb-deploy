@@ -336,69 +336,6 @@ class Config
     }
 
     /**
-     * Get processes
-     */
-    public function getProcesses(bool $array = true) : array
-    {
-        assert(valid_num_args());
-
-        $default = true === $array ? [] : null;
-
-        return [
-            'Deploy' => [
-                'Pre' => $this->config['Processes']['Deploy']['Pre'] ?? $default,
-                'Post' => $this->config['Processes']['Deploy']['Post'] ?? $default,
-            ],
-            'Rollback' => [
-                'Pre' => $this->config['Processes']['Rollback']['Pre'] ?? $default,
-                'Post' => $this->config['Processes']['Rollback']['Post'] ?? $default,
-            ],
-            'Live' => [
-                'Pre' => $this->config['Processes']['Live']['Pre'] ?? $default,
-                'Post' => $this->config['Processes']['Live']['Post'] ?? $default,
-            ],
-            'Cleanup' => [
-                'Pre' => $this->config['Processes']['Cleanup']['Pre'] ?? $default,
-                'Post' => $this->config['Processes']['Cleanup']['Post'] ?? $default,
-            ],
-        ];
-    }
-
-    /**
-     * Add path to chmod
-     */
-    public function pushProcess(string $stage, string $prePost, string $class)
-    {
-        assert(valid_num_args());
-        assert(in_array($stage, ['Deploy', 'Rollback', 'Live', 'Cleanup']));
-        assert(in_array($prePost, ['Pre', 'Post']));
-
-        if (!isset($this->config['Processes'][$stage][$prePost])) {
-            $this->config['Processes'][$stage][$prePost] = [];
-        }
-
-        array_push($this->config['Processes'][$stage][$prePost], trim($class));
-    }
-
-    /**
-     * Remove path from chown
-     */
-    public function popProcess(string $stage, string $prePost, string $class)
-    {
-        assert(valid_num_args());
-        assert(in_array($stage, ['Deploy', 'Rollback', 'Live', 'Cleanup']));
-        assert(in_array($prePost, ['Pre', 'Post']));
-
-        $processes = $this->getProcesses();
-
-        for ($i = 0; $i < count($processes[$stage][$prePost]); $i++) {
-            if ($processes[$stage][$prePost][$i] === $class) {
-                array_splice($this->config['Processes'][$stage][$prePost], $i, 1);
-            }
-        }
-    }
-
-    /**
      * Prepare config array for saving
      */
     protected function prepareToSave() : array
@@ -412,7 +349,6 @@ class Config
             'GitHub' => $this->getGitHub(),
             'Chown' => $this->getChown(),
             'Chmod' => $this->getChmod(),
-            'Processes' => $this->getProcesses(),
         ];
 
         return ['Deploy' => $config];

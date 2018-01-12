@@ -51,7 +51,7 @@ class CleanupReleasesProcess implements ProcessInterface
         $chown = $this->config->getChown();
         $chmod = $this->config->getChmod();
 
-        $this->output->header('Remove Unwanted Files');
+        $this->output->header('Cleanup Old Repositories');
 
         $outDated = new OutDatedReleases($this->config, $this->env);
         $remove = $outDated->find();

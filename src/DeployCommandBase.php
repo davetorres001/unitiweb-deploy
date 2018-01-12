@@ -94,20 +94,34 @@ class DeployCommandBase extends Command
         // Load the configuration
         $this->config = new Config($this->output, $this->configPath);
         $this->config->load();
-        $this->processes = $this->config->getProcesses();
 
         // Check to make sure the release structure exists
         $structure = new ConfigDirectoryStructure($this->output, $this->env);
         $structure->check();
 
-        // Deploy Process
-        $this->deployProcesses('Deploy', 'Pre');
+        $this->preDeploy();
+
+        $this->prePullRepo();
         $this->pullRepo();
+        $this->postPullRepo();
+
+        $this->preCopyRepo();
         $this->copyRepo();
+        $this->postCopyRepo();
+
+        $this->prePrePermissions();
         $this->prePermissions();
+        $this->postPrePermissions();
+
+        $this->preSharedSymlinks();
         $this->sharedSymlinks();
+        $this->postSharedSymlinks();
+
+        $this->preRemoveFiles();
         $this->removeFiles();
-        $this->deployProcesses('Deploy', 'Post');
+        $this->postRemoveFiles();
+
+        $this->postDeploy();
 
         $this->rollback();
         $this->cleanup();
@@ -181,8 +195,6 @@ class DeployCommandBase extends Command
     {
         assert(valid_num_args());
 
-        $this->deployProcesses('Rollback', 'Pre');
-        $this->deployProcesses('Rollback', 'Post');
     }
 
     /**
@@ -192,16 +204,12 @@ class DeployCommandBase extends Command
     {
         assert(valid_num_args());
 
-        $this->deployProcesses('Live', 'Pre');
-
         $permissions = new PermissionsProcess($this->config, $this->env, $this->output);
         $permissions->setPost();
         $permissions->execute();
 
         $live = new MakeLiveProcess($this->config, $this->env, $this->output);
         $live->execute();
-
-        $this->deployProcesses('Live', 'Post');
     }
 
     /**
@@ -211,32 +219,67 @@ class DeployCommandBase extends Command
     {
         assert(valid_num_args());
 
-        $this->deployProcesses('Cleanup', 'Pre');
-
         $cleanup = new CleanupReleasesProcess($this->config, $this->env, $this->output);
         $cleanup->execute();
-
-        $this->deployProcesses('Cleanup', 'Post');
     }
 
-    /**
-     * Pre Deploy Hook
-     */
-    protected function deployProcesses(string $stage, string $prePost)
-    {
+    protected function preDeploy() {
         assert(valid_num_args());
 
-        $namespace = $this->config->getNamespace();
+    }
 
-        if (substr($namespace, -1) !== '\\') {
-            $namespace = $namespace . '\\';
-        }
+    protected function prePullRepo() {
+        assert(valid_num_args());
 
-        foreach ($this->processes[$stage][$prePost] as $class) {
-            $fullClass = $namespace . 'Process\\' . $class;
-            $process = new $fullClass($this->config, $this->env, $this->output);
-            assert($process instanceof ProcessInterface);
-            $process->execute();
-        }
+    }
+
+    protected function postPullRepo() {
+        assert(valid_num_args());
+
+    }
+
+    protected function preCopyRepo() {
+        assert(valid_num_args());
+
+    }
+
+    protected function postCopyRepo() {
+        assert(valid_num_args());
+
+    }
+
+    protected function prePrePermissions() {
+        assert(valid_num_args());
+
+    }
+
+    protected function postPrePermissions() {
+        assert(valid_num_args());
+
+    }
+
+    protected function preSharedSymlinks() {
+        assert(valid_num_args());
+
+    }
+
+    protected function postSharedSymlinks() {
+        assert(valid_num_args());
+
+    }
+
+    protected function preRemoveFiles() {
+        assert(valid_num_args());
+
+    }
+
+    protected function postRemoveFiles() {
+        assert(valid_num_args());
+
+    }
+
+    protected function postDeploy() {
+        assert(valid_num_args());
+
     }
 }
