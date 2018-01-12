@@ -89,7 +89,6 @@ class DeployConfigCommand extends Command
         // Load the configuration
         $this->config = new Config($this->output, $this->configDir);
         $this->config->load();
-        $this->processes = $this->config->getProcesses();
 
         $this->beginQuestions();
 
