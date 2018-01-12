@@ -291,10 +291,6 @@ class DeployQuestion
                 $answer = false;
             } else {
                 $answer = filter_var($answer, FILTER_VALIDATE_BOOLEAN);
-                if (false === $answer) {
-                    $result['success'] = false;
-                    $result['error'] = 'must be a boolean';
-                }
             }
         }
 

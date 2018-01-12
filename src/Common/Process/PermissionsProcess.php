@@ -74,23 +74,20 @@ class PermissionsProcess implements ProcessInterface
         assert(in_array($this->prePost, ['Pre', 'Post']));
 
         $release = $this->env->getCurrentReleasePath();
-        $environment = $this->env->getEnvironment();
         $chown = $this->config->getChown();
         $chmod = $this->config->getChmod();
-        $sudo = true === $environment['UseSudo'] ? 'sudo ' : '';
 
         $this->output->header("{$this->prePost} Chown");
 
         foreach ($chown[$this->prePost]['Paths'] as $path) {
             $command = $this->makeCommand(
-                $sudo,
                 'chown',
                 is_dir($release . $path) ? '-R' : '',
                 $chown[$this->prePost]['Group'],
                 $release . $path
             );
             $this->output->writeln($command);
-            $this->process->run($command, null, $environment['UseSudo']);
+            $this->process->run($command, null, $this->env->getUseSudo());
         }
 
         $this->output->line('yellow');
@@ -99,14 +96,13 @@ class PermissionsProcess implements ProcessInterface
 
         foreach ($chmod[$this->prePost]['Paths'] as $path) {
             $command = $this->makeCommand(
-                $sudo,
                 'chmod',
                 is_dir($release . $path) ? '-R' : '',
                 $chmod[$this->prePost]['Permission'],
                 $release . $path
             );
             $this->output->writeln($command);
-            $this->process->run($command, null, $environment['UseSudo']);
+            $this->process->run($command, null, $this->env->getUseSudo());
         }
 
         $this->output->line('yellow');

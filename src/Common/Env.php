@@ -122,21 +122,6 @@ class Env
     }
 
     /**
-     * Get Environment
-     */
-    public function getEnvironment() : array
-    {
-        assert(valid_num_args());
-
-        return [
-            'Name' => $this->env['Environment']['Name'] ?? 'prod',
-            'MaxReleases' => $this->env['Environment']['MaxReleases'] ?? 5,
-            'UseSudo' => $this->env['Environment']['UseSudo'] === true ? true : false,
-            'ProcessTimeout' => $this->env['Environment']['ProcessTimeout'] ?? 120,
-        ];
-    }
-
-    /**
      * Set environment
      */
     public function setEnvironment(string $key, $value)
@@ -151,6 +136,103 @@ class Env
         ]);
 
         $this->env['Environment'][$key] = $value;
+    }
+
+    /**
+     * Get Environment
+     */
+    public function getEnvironment() : array
+    {
+        assert(valid_num_args());
+
+        $environment = [];
+
+        $environment['Name'] = 'prod';
+        if (isset($this->env['Environment']['Name']) && $this->env['Environment']['Name'] !== '') {
+            $environment['Name'] = $this->env['Environment']['Name'];
+        }
+
+        $environment['MaxReleases'] = 5;
+        if (isset($this->env['Environment']['MaxReleases']) && (int) $this->env['Environment']['MaxReleases'] > 0) {
+            $environment['MaxReleases'] = (int) $this->env['Environment']['MaxReleases'];
+        }
+
+        $environment['UseSudo'] = false;
+        if (isset($this->env['Environment']['UseSudo'])) {
+            if ($this->env['Environment']['UseSudo'] === 'true' || $this->env['Environment']['UseSudo'] === true || $this->env['Environment']['UseSudo'] === 1) {
+                $environment['UseSudo'] = true;
+            }
+        }
+
+        $environment['ProcessTimeout'] = 120;
+        if (isset($this->env['Environment']['ProcessTimeout']) && (int) $this->env['Environment']['ProcessTimeout'] > 0) {
+            $environment['ProcessTimeout'] = (int) $this->env['Environment']['ProcessTimeout'];
+        }
+
+        return $environment;
+    }
+
+    /**
+     * Get name
+     */
+    public function getName() : string
+    {
+        assert(valid_num_args());
+
+        $environment = $this->getEnvironment();
+
+        return $environment['Name'];
+    }
+
+    /**
+     * Get max releases
+     */
+    public function getMaxReleases() : int
+    {
+        assert(valid_num_args());
+
+        $environment = $this->getEnvironment();
+
+        return $environment['MaxReleases'];
+    }
+
+    /**
+     * Get sudo
+     */
+    public function getUseSudo() : bool
+    {
+        assert(valid_num_args());
+
+        $environment = $this->getEnvironment();
+
+        return $environment['UseSudo'];
+    }
+
+    /**
+     * Get process timeout
+     */
+    public function getProcessTimeout() : int
+    {
+        assert(valid_num_args());
+
+        $environment = $this->getEnvironment();
+
+        return $environment['ProcessTimeout'];
+    }
+
+    /**
+     * Set path
+     */
+    public function setPath(string $key, string $value)
+    {
+        assert(valid_num_args());
+        assert(in_array($key, ['Root', 'Repo', 'Releases', 'Shared']));
+
+        if (substr($value, -1) !== '/') {
+            $value .= '/';
+        }
+
+        $this->env['Paths'][$key] = $value;
     }
 
     /**
@@ -181,18 +263,51 @@ class Env
     }
 
     /**
-     * Set path
+     * Get root path
      */
-    public function setPath(string $key, string $value)
+    public function getRootPath() : string
     {
         assert(valid_num_args());
-        assert(in_array($key, ['Root', 'Repo', 'Releases', 'Shared']));
 
-        if (substr($value, -1) !== '/') {
-            $value .= '/';
-        }
+        $environment = $this->getPaths();
 
-        $this->env['Paths'][$key] = $value;
+        return $environment['Root'];
+    }
+
+    /**
+     * Get repo path
+     */
+    public function getRepoPath() : string
+    {
+        assert(valid_num_args());
+
+        $environment = $this->getPaths();
+
+        return $environment['Repo'];
+    }
+
+    /**
+     * Get releases path
+     */
+    public function getReleasesPath() : string
+    {
+        assert(valid_num_args());
+
+        $environment = $this->getPaths();
+
+        return $environment['Releases'];
+    }
+
+    /**
+     * Get shared path
+     */
+    public function getSharedPath() : string
+    {
+        assert(valid_num_args());
+
+        $environment = $this->getPaths();
+
+        return $environment['Shared'];
     }
 
     /**

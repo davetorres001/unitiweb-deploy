@@ -32,9 +32,6 @@ class DeployProcess
     {
         assert(valid_num_args());
 
-        $environment = $this->env->getEnvironment();
-        $timeout = $environment['ProcessTimeout'];
-
         if (null !== $workingDir) {
             if (true === $sudo) {
                 $command = "cd $workingDir && sudo $command";
@@ -45,7 +42,9 @@ class DeployProcess
 
         $process = new Process($command);
         $process->start();
-        $process->setTimeout($timeout);
+        if ($this->env->getProcessTimeout() > 0) {
+            $process->setTimeout($this->env->getProcessTimeout());
+        }
         $process->wait(function ($type, $buffer) {
             $lines = explode("\n", $buffer);
             foreach ($lines as $line) {

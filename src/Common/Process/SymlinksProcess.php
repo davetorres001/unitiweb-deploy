@@ -48,14 +48,13 @@ class SymlinksProcess implements ProcessInterface
         assert(valid_num_args());
 
         $release = $this->env->getCurrentReleasePath();
-        $paths = $this->env->getPaths();
 
         $this->output->header('Create Shared Symlinks');
 
         foreach ($this->config->getShared() as $file) {
 
             $origPath = $release . $file;
-            $path = $paths['Shared'] . $file;
+            $path = $this->env->getSharedPath() . $file;
 
             // Create shared symliny directory if it doesn't exist
             if (!file_exists(dirname($path))) {

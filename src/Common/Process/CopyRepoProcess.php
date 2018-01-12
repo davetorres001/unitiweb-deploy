@@ -47,10 +47,8 @@ class CopyRepoProcess implements ProcessInterface
     {
         assert(valid_num_args());
 
-        $paths = $this->env->getPaths();
-
         $directory = date('Y-m-d-H-i-s');
-        $release = $paths['Releases'] . $directory . '/';
+        $release = $this->env->getReleasesPath() . $directory . '/';
 
         $this->output->header('Copy Repo to Release Directory');
 
@@ -58,7 +56,7 @@ class CopyRepoProcess implements ProcessInterface
         $this->process->run("mkdir $release");
 
         $this->output->writeln('Copying files over');
-        $this->process->run("cp -a {$paths['Repo']}/* $release");
+        $this->process->run("cp -a {$this->env->getRepoPath()}/* $release");
 
         $this->env->setCurrent($directory);
         $this->env->save();

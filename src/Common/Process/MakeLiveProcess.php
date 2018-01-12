@@ -49,9 +49,8 @@ class MakeLiveProcess implements ProcessInterface
         assert(valid_num_args());
 
         $current = $this->env->getCurrent();
-        $paths = $this->env->getPaths();
         $source = $this->env->getCurrentReleasePath();
-        $destination = $paths['Root'] . 'current';
+        $destination = $this->env->getRootPath() . 'current';
 
         $this->output->header('Make Release Live');
 

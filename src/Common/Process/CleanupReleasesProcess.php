@@ -50,8 +50,6 @@ class CleanupReleasesProcess implements ProcessInterface
 
         $chown = $this->config->getChown();
         $chmod = $this->config->getChmod();
-        $environment = $this->env->getEnvironment();
-        $sudo = true === $environment['UseSudo'] ? 'sudo ' : '';
 
         $this->output->header('Remove Unwanted Files');
 
@@ -63,31 +61,29 @@ class CleanupReleasesProcess implements ProcessInterface
             // Change files back to pre group so it can be deleted
             foreach ($chown['Pre']['Paths'] as $path) {
                 $command = $this->makeCommand(
-                    $sudo,
                     'chown',
                     is_dir($dir . '/' . $path) ? '-R' : '',
                     $chown['Pre']['Group'],
                     $dir . '/' . $path
                 );
                 $this->output->writeln($command);
-                $this->process->run($command, null, $environment['UseSudo']);
+                $this->process->run($command, null, $this->env->getUseSudo());
             }
 
             // Change files back to pre permissions so it can be deleted
             foreach ($chmod['Pre']['Paths'] as $path) {
                 $command = $this->makeCommand(
-                    $sudo,
                     'chmod',
                     is_dir($dir . '/' . $path) ? '-R' : '',
                     $chmod['Pre']['Permission'],
                     $dir . '/' . $path
                 );
                 $this->output->writeln($command);
-                $this->process->run($command, null, $environment['UseSudo']);
+                $this->process->run($command, null, $this->env->getUseSudo());
             }
 
             $this->output->writeln('Removing release '. $dir);
-            $this->process->run("$sudo rm -rf $dir");
+            $this->process->run("rm -rf $dir", null, $this->env->getUseSudo());
         }
 
         $this->output->line('yellow');

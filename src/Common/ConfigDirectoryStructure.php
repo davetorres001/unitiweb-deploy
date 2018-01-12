@@ -37,10 +37,7 @@ class ConfigDirectoryStructure
     {
         assert(valid_num_args());
 
-        $paths = $this->env->getPaths();
-        assert(array_key_exists('Root', $paths));
-
-        if (null === $paths['Root']) {
+        if (null === $this->env->getRootPath()) {
             $this->output->error('Root path is not configured in the config.yml file');
         }
 
@@ -50,7 +47,7 @@ class ConfigDirectoryStructure
 
         $pass = true;
         foreach (['releases', 'repo', 'shared'] as $directory) {
-            if (false === is_dir($paths['Root'] . $directory)) {
+            if (false === is_dir($this->env->getRootPath() . $directory)) {
                 $pass = false;
             }
         }
@@ -144,19 +141,15 @@ class ConfigDirectoryStructure
     {
         assert(valid_num_args());
 
-        $paths = $this->env->getPaths();
-
         $table = new Table($this->output->getOutput());
         $table
             ->setHeaders(['Setting', 'Path'])
-            ->setRows(
-                [
-                    ['Root', $paths['Root']],
-                    ['Repo', $paths['Repo']],
-                    ['Releases', $paths['Releases']],
-                    ['Shared', $paths['Shared']],
-                ]
-            );;
+            ->setRows([
+                ['Root', $this->env->getRootPath()],
+                ['Repo', $this->env->getRepoPath()],
+                ['Releases', $this->env->getReleasesPath()],
+                ['Shared', $this->env->getSharedPath()],
+            ]);
         $table->render();
     }
 
@@ -167,13 +160,10 @@ class ConfigDirectoryStructure
     {
         assert(valid_num_args());
 
-        $paths = $this->env->getPaths();
-        assert(array_key_exists('Root', $paths));
-
-        if (null === ($paths['Root'] ?? null)) {
+        if ($this->env->getRootPath() === '') {
             return false;
         }
 
-        return is_dir($paths['Root']);
+        return is_dir($this->env->getRootPath());
     }
 }

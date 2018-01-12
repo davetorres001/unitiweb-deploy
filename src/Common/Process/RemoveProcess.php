@@ -55,7 +55,7 @@ class RemoveProcess implements ProcessInterface
         foreach ($remove as $file) {
             $path = $release . $file;
             if (is_file($path)) {
-                $this->process->run("rm $path");
+                $this->process->run("rm $path", null, $this->env->getUseSudo());
                 $this->output->writeln("removed: $path");
             }
         }

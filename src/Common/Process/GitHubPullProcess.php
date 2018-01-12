@@ -48,31 +48,31 @@ class GitHubPullProcess implements ProcessInterface
      */
     public function execute()
     {
-        $paths = $this->env->getPaths();
+        $repoPath = $this->env->getRepoPath();
         $github = $this->config->getGitHub();
 
         $this->output->header('GitHub: Setup');
 
-        if (!is_dir($paths['Repo'] . '.git')) {
-            $this->process->run('git init', $paths['Repo']);
-            $this->process->run("git remote add {$github['Remote']} {$github['Repo']}", $paths['Repo']);
+        if (!is_dir($repoPath . '.git')) {
+            $this->process->run('git init', $repoPath);
+            $this->process->run("git remote add {$github['Remote']} {$github['Repo']}", $repoPath);
         }
 
         // Fetch all releases
-        $this->process->run("git checkout master", $paths['Repo']);
-        $this->process->run("git fetch --all", $paths['Repo']);
+        $this->process->run("git checkout master", $repoPath);
+        $this->process->run("git fetch --all", $repoPath);
         $this->output->line();
 
-        if (null !== ($release = $this->askForTag($paths['Repo']))) {
-            $this->process->run("git checkout $release", $paths['Repo']);
-        } elseif (null !== ($branch = $this->askForBranch($paths['Repo']))) {
+        if (null !== ($release = $this->askForTag($repoPath))) {
+            $this->process->run("git checkout $release", $repoPath);
+        } elseif (null !== ($branch = $this->askForBranch($repoPath))) {
             $parts = explode('/', $branch);
             $remote = $parts[0] ?? null;
             $branch = $parts[1] ?? null;
             if (null === $remote || null === $branch) {
                 $this->output->error('Invalid GitHub remote or branch');
             }
-            $this->process->run("git pull $remote $branch", $paths['Repo']);
+            $this->process->run("git pull $remote $branch", $repoPath);
         }
 
         $this->output->line('yellow');
