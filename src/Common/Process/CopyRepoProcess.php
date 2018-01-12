@@ -6,6 +6,7 @@ namespace Unitiweb\Deploy\Common\Process;
 use Unitiweb\Deploy\Common\Config;
 use Unitiweb\Deploy\Common\DeployOutput;
 use Unitiweb\Deploy\Common\DeployProcess;
+use Unitiweb\Deploy\Common\Env;
 
 class CopyRepoProcess implements ProcessInterface
 {
@@ -13,6 +14,11 @@ class CopyRepoProcess implements ProcessInterface
      * @var Config
      */
     protected $config;
+
+    /**
+     * @var Env
+     */
+    protected $env;
 
     /**
      * @var DeployOutput
@@ -24,13 +30,14 @@ class CopyRepoProcess implements ProcessInterface
      */
     protected $process;
 
-    public function __construct(Config $config, DeployOutput $output, DeployProcess $process = null)
+    public function __construct(Config $config, Env $env, DeployOutput $output, DeployProcess $process = null)
     {
         assert(valid_num_args());
 
         $this->config = $config;
+        $this->env = $env;
         $this->output = $output;
-        $this->process = $process ?? new DeployProcess($output, $config);
+        $this->process = $process ?? new DeployProcess($output, $env);
     }
 
     /**
@@ -40,7 +47,7 @@ class CopyRepoProcess implements ProcessInterface
     {
         assert(valid_num_args());
 
-        $paths = $this->config->getPaths();
+        $paths = $this->env->getPaths();
 
         $directory = date('Y-m-d-H-i-s');
         $release = $paths['Releases'] . $directory . '/';
@@ -53,8 +60,8 @@ class CopyRepoProcess implements ProcessInterface
         $this->output->writeln('Copying files over');
         $this->process->run("cp -a {$paths['Repo']}/* $release");
 
-        $this->config->setEnvironment('Current', $directory);
-        $this->config->save();
+        $this->env->setCurrent($directory);
+        $this->env->save();
 
         $this->output->line('yellow');
     }

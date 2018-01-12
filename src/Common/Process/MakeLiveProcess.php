@@ -7,6 +7,7 @@ use Symfony\Component\Console\Input\ArrayInput;
 use Unitiweb\Deploy\Common\Config;
 use Unitiweb\Deploy\Common\DeployOutput;
 use Unitiweb\Deploy\Common\DeployProcess;
+use Unitiweb\Deploy\Common\Env;
 
 class MakeLiveProcess implements ProcessInterface
 {
@@ -14,6 +15,11 @@ class MakeLiveProcess implements ProcessInterface
      * @var Config
      */
     protected $config;
+
+    /**
+     * @var Env
+     */
+    protected $env;
 
     /**
      * @var DeployOutput
@@ -25,13 +31,14 @@ class MakeLiveProcess implements ProcessInterface
      */
     protected $process;
 
-    public function __construct(Config $config, DeployOutput $output, DeployProcess $process = null)
+    public function __construct(Config $config, Env $env, DeployOutput $output, DeployProcess $process = null)
     {
         assert(valid_num_args());
 
         $this->config = $config;
+        $this->env = $env;
         $this->output = $output;
-        $this->process = $process ?? new DeployProcess($output, $config);
+        $this->process = $process ?? new DeployProcess($output, $env);
     }
 
     /**
@@ -41,14 +48,14 @@ class MakeLiveProcess implements ProcessInterface
     {
         assert(valid_num_args());
 
-        $environment = $this->config->getEnvironment();
-        $paths = $this->config->getPaths();
-        $source = $this->config->getCurrentReleasePath();
+        $current = $this->env->getCurrent();
+        $paths = $this->env->getPaths();
+        $source = $this->env->getCurrentReleasePath();
         $destination = $paths['Root'] . 'current';
 
         $this->output->header('Make Release Live');
 
-        $this->output->writeln("Setting repo {$environment['Current']} to Live");
+        $this->output->writeln("Setting repo $current to Live");
 
         if (is_file($destination)) {
             $this->process->run("rm $destination");

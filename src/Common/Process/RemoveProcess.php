@@ -6,6 +6,7 @@ namespace Unitiweb\Deploy\Common\Process;
 use Unitiweb\Deploy\Common\Config;
 use Unitiweb\Deploy\Common\DeployOutput;
 use Unitiweb\Deploy\Common\DeployProcess;
+use Unitiweb\Deploy\Common\Env;
 
 class RemoveProcess implements ProcessInterface
 {
@@ -13,6 +14,11 @@ class RemoveProcess implements ProcessInterface
      * @var Config
      */
     protected $config;
+
+    /**
+     * @var Env
+     */
+    protected $env;
 
     /**
      * @var DeployOutput
@@ -24,13 +30,14 @@ class RemoveProcess implements ProcessInterface
      */
     protected $process;
 
-    public function __construct(Config $config, DeployOutput $output, DeployProcess $process = null)
+    public function __construct(Config $config, Env $env, DeployOutput $output, DeployProcess $process = null)
     {
         assert(valid_num_args());
 
         $this->config = $config;
+        $this->env = $env;
         $this->output = $output;
-        $this->process = $process ?? new DeployProcess($output, $config);
+        $this->process = $process ?? new DeployProcess($output, $env);
     }
 
     /**
@@ -40,16 +47,16 @@ class RemoveProcess implements ProcessInterface
     {
         assert(valid_num_args());
 
-        $release = $this->config->getCurrentReleasePath();
+        $release = $this->env->getCurrentReleasePath();
         $remove = $this->config->getRemove();
 
         $this->output->header('Remove Unwanted Files');
 
         foreach ($remove as $file) {
             $path = $release . $file;
-//            print_r($path); exit;
             if (is_file($path)) {
                 $this->process->run("rm $path");
+                $this->output->writeln("removed: $path");
             }
         }
 

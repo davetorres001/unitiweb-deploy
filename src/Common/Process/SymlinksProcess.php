@@ -6,6 +6,7 @@ namespace Unitiweb\Deploy\Common\Process;
 use Unitiweb\Deploy\Common\Config;
 use Unitiweb\Deploy\Common\DeployOutput;
 use Unitiweb\Deploy\Common\DeployProcess;
+use Unitiweb\Deploy\Common\Env;
 
 class SymlinksProcess implements ProcessInterface
 {
@@ -13,6 +14,11 @@ class SymlinksProcess implements ProcessInterface
      * @var Config
      */
     protected $config;
+
+    /**
+     * @var Env
+     */
+    protected $env;
 
     /**
      * @var DeployOutput
@@ -24,13 +30,14 @@ class SymlinksProcess implements ProcessInterface
      */
     protected $process;
 
-    public function __construct(Config $config, DeployOutput $output, DeployProcess $process = null)
+    public function __construct(Config $config, Env $env, DeployOutput $output, DeployProcess $process = null)
     {
         assert(valid_num_args());
 
         $this->config = $config;
+        $this->env = $env;
         $this->output = $output;
-        $this->process = $process ?? new DeployProcess($output, $config);
+        $this->process = $process ?? new DeployProcess($output, $env);
     }
 
     /**
@@ -40,8 +47,8 @@ class SymlinksProcess implements ProcessInterface
     {
         assert(valid_num_args());
 
-        $release = $this->config->getCurrentReleasePath();
-        $paths = $this->config->getPaths();
+        $release = $this->env->getCurrentReleasePath();
+        $paths = $this->env->getPaths();
 
         $this->output->header('Create Shared Symlinks');
 
@@ -70,6 +77,7 @@ class SymlinksProcess implements ProcessInterface
 
             if (file_exists($path)) {
                 $this->process->run("ln -s $path $origPath");
+                $this->output->writeln('symlink: ' . basename($origPath) . ' -> ' . $path);
             } else {
                 $this->output->error("The shared file $file does not exist");
             }

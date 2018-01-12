@@ -6,6 +6,7 @@ namespace Unitiweb\Deploy\Common\Process;
 use Unitiweb\Deploy\Common\Config;
 use Unitiweb\Deploy\Common\DeployOutput;
 use Unitiweb\Deploy\Common\DeployProcess;
+use Unitiweb\Deploy\Common\Env;
 
 class GitHubPullProcess implements ProcessInterface
 {
@@ -13,6 +14,11 @@ class GitHubPullProcess implements ProcessInterface
      * @var Config
      */
     protected $config;
+
+    /**
+     * @var Env
+     */
+    protected $env;
 
     /**
      * @var DeployOutput
@@ -24,13 +30,14 @@ class GitHubPullProcess implements ProcessInterface
      */
     protected $process;
 
-    public function __construct(Config $config, DeployOutput $output, DeployProcess $process = null)
+    public function __construct(Config $config, Env $env, DeployOutput $output, DeployProcess $process = null)
     {
         assert(valid_num_args());
 
         $this->config = $config;
+        $this->env = $env;
         $this->output = $output;
-        $this->process = $process ?? new DeployProcess($output, $config);
+        $this->process = $process ?? new DeployProcess($output, $env);
     }
 
     /**
@@ -38,7 +45,7 @@ class GitHubPullProcess implements ProcessInterface
      */
     public function execute()
     {
-        $paths = $this->config->getPaths();
+        $paths = $this->env->getPaths();
         $github = $this->config->getGitHub();
 
         $this->output->header('Pulling the Git Repo');

@@ -10,11 +10,17 @@ class OutDatedReleases
      */
     protected $config;
 
-    public function __construct(Config $config)
+    /**
+     * @var Env
+     */
+    protected $env;
+
+    public function __construct(Config $config, Env $env)
     {
         assert(valid_num_args());
 
         $this->config = $config;
+        $this->env = $env;
     }
 
     /**
@@ -24,8 +30,8 @@ class OutDatedReleases
     {
         assert(valid_num_args());
 
-        $paths = $this->config->getPaths();
-        $environment = $this->config->getEnvironment();
+        $paths = $this->env->getPaths();
+        $environment = $this->env->getEnvironment();
 
         $remove = [];
         $data = scandir($paths['Releases']);

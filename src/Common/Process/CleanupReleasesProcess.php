@@ -6,6 +6,7 @@ namespace Unitiweb\Deploy\Common\Process;
 use Unitiweb\Deploy\Common\Config;
 use Unitiweb\Deploy\Common\DeployOutput;
 use Unitiweb\Deploy\Common\DeployProcess;
+use Unitiweb\Deploy\Common\Env;
 use Unitiweb\Deploy\Common\OutDatedReleases;
 
 class CleanupReleasesProcess implements ProcessInterface
@@ -14,6 +15,11 @@ class CleanupReleasesProcess implements ProcessInterface
      * @var Config
      */
     protected $config;
+
+    /**
+     * @var Env
+     */
+    protected $env;
 
     /**
      * @var DeployOutput
@@ -25,13 +31,14 @@ class CleanupReleasesProcess implements ProcessInterface
      */
     protected $process;
 
-    public function __construct(Config $config, DeployOutput $output, DeployProcess $process = null)
+    public function __construct(Config $config, Env $env, DeployOutput $output, DeployProcess $process = null)
     {
         assert(valid_num_args());
 
         $this->config = $config;
+        $this->env = $env;
         $this->output = $output;
-        $this->process = $process ?? new DeployProcess($output, $config);
+        $this->process = $process ?? new DeployProcess($output, $env);
     }
 
     /**
@@ -43,12 +50,12 @@ class CleanupReleasesProcess implements ProcessInterface
 
         $chown = $this->config->getChown();
         $chmod = $this->config->getChmod();
-        $environment = $this->config->getEnvironment();
+        $environment = $this->env->getEnvironment();
         $sudo = true === $environment['UseSudo'] ? 'sudo ' : '';
 
         $this->output->header('Remove Unwanted Files');
 
-        $outDated = new OutDatedReleases($this->config);
+        $outDated = new OutDatedReleases($this->config, $this->env);
         $remove = $outDated->find();
 
         foreach ($remove as $dir) {

@@ -14,6 +14,11 @@ class Config
     protected $output;
 
     /**
+     * @var string
+     */
+    protected $configFile;
+
+    /**
      * @var array
      */
     protected $config;
@@ -23,13 +28,12 @@ class Config
      */
     protected $process;
 
-    public function __construct(DeployOutput $output, DeployProcess $process = null, string $configPath = null)
+    public function __construct(DeployOutput $output, string $configDir = null)
     {
         assert(valid_num_args());
 
         $this->output = $output;
-        $this->configPath = $configPath ?? dirname(dirname(__DIR__)) . '/config.yml';
-        $this->process = $process ?? new DeployProcess($output, $this);
+        $this->configFile = $configDir . '/config.yml';
     }
 
     /**
@@ -40,13 +44,13 @@ class Config
         assert(valid_num_args());
 
         // Check to see if the config file exists
-        if (!file_exists($this->configPath)) {
+        if (!file_exists($this->configFile)) {
             $this->save();
         }
 
         // Load the config.yml file
         try {
-            $config = Yaml::parse(file_get_contents($this->configPath));
+            $config = Yaml::parse(file_get_contents($this->configFile));
         } catch (ParseException $e) {
             $this->output->error("Unable to parse the config YAML string: {$e->getMessage()}");
         }
@@ -70,7 +74,7 @@ class Config
 
         $yaml = Yaml::dump($config, 10, 4, Yaml::DUMP_EMPTY_ARRAY_AS_SEQUENCE);
 
-        if (false === file_put_contents($this->configPath, $yaml)) {
+        if (false === file_put_contents($this->configFile, $yaml)) {
             $this->output->error('The configuration file could not be saved');
             return false;
         }
@@ -79,107 +83,23 @@ class Config
     }
 
     /**
-     * Create new config.yml file from config.yml.dist
+     * Get namespace
      */
-    public function create()
+    public function getNamespace() : string
     {
         assert(valid_num_args());
 
-        $base = dirname($this->configPath);
-        $this->process->run("cp $base/config.yml.dist $base/config.yml");
-        $this->load();
-        $this->save();
+        return isset($this->config['Namespace']) ? $this->config['Namespace'] : '';
     }
 
     /**
-     * Get current release path
+     * Set namespace
      */
-    public function getCurrentReleasePath() : string
+    public function setNamespace(string $namespace)
     {
         assert(valid_num_args());
 
-        $paths = $this->getPaths();
-        $environment = $this->getEnvironment();
-
-        return $paths['Releases'] . $environment['Current'] . '/';
-    }
-
-    /**
-     * Get Environment
-     */
-    public function getEnvironment() : array
-    {
-        assert(valid_num_args());
-
-        return [
-            'Namespace' => $this->config['Environment']['Namespace'] ?? '',
-            'Name' => $this->config['Environment']['Name'] ?? 'prod',
-            'Current' => $this->config['Environment']['Current'] ?? null,
-            'MaxReleases' => (int) $this->config['Environment']['MaxReleases'] ?? 5,
-            'UseSudo' => (bool) $this->config['Environment']['UseSudo'] ?? false,
-            'ProcessTimeout' => (int) $this->config['Environment']['ProcessTimeout'] ?? 120,
-        ];
-    }
-
-    /**
-     * Set environment
-     */
-    public function setEnvironment(string $key, $value)
-    {
-        assert(valid_num_args());
-
-        $this->assertType($key, $value, [
-            'Namespace' => 'string',
-            'Name' => 'string',
-            'Current' => 'string',
-            'MaxReleases' => 'int',
-            'UseSudo' => 'bool',
-            'ProcessTimeout' => 'int'
-        ]);
-
-        $this->config['Environment'][$key] = $value;
-    }
-
-    /**
-     * Get Paths
-     */
-    public function getPaths() : array
-    {
-        assert(valid_num_args());
-
-        $default = '../';
-
-        $data = [
-            'Root' => $this->config['Paths']['Root'] ?? $default,
-            'Repo' => $this->config['Paths']['Repo'] ?? $default . 'repo',
-            'Releases' => $this->config['Paths']['Releases'] ?? $default . 'releases',
-            'Shared' => $this->config['Paths']['Shared'] ?? $default . 'shared',
-        ];
-
-        foreach ($data as $key => $value) {
-            if (null !== $data[$key]) {
-                if (substr($data[$key], -1) !== '/') {
-                    $data[$key] .= '/';
-                }
-            }
-        }
-
-        return $data;
-    }
-
-    /**
-     * Set path
-     */
-    public function setPath(string $key, string $value)
-    {
-        assert(valid_num_args());
-        assert(in_array($key, ['Root', 'Repo', 'Releases', 'Shared']));
-
-        if (substr($value, -1) !== '/') {
-            $value .= '/';
-        }
-
-        $this->config['Paths'][$key] = $value;
+        $this->config['Namespace'] = $namespace;
     }
 
     /**
@@ -481,27 +401,6 @@ class Config
     }
 
     /**
-     * Assert that the value is the correct type
-     */
-    protected function assertType(string $key, $value, array $config)
-    {
-        assert(valid_num_args());
-        assert(array_key_exists($key, $config));
-
-        $type = $config[$key];
-
-        if ($type === 'string') {
-            assert(is_string($value));
-        } elseif ($type === 'int') {
-            $value = filter_var($value, FILTER_VALIDATE_INT);
-            assert(is_int($value));
-        } elseif ($type === 'bool') {
-            $value = filter_var($value, FILTER_VALIDATE_BOOLEAN);
-            assert(is_bool($value));
-        }
-    }
-
-    /**
      * Prepare config array for saving
      */
     protected function prepareToSave() : array
@@ -509,8 +408,7 @@ class Config
         assert(valid_num_args());
 
         $config = [
-            'Environment' => $this->getEnvironment(),
-            'Paths' => $this->getPaths(),
+            'Namespace' => $this->getNamespace(),
             'Shared' => $this->getShared(),
             'Remove' => $this->getRemove(),
             'GitHub' => $this->getGitHub(),
@@ -519,30 +417,6 @@ class Config
             'Processes' => $this->getProcesses(),
         ];
 
-//        $config = $this->prepareArraytoSave($config);
-
         return ['Deploy' => $config];
-    }
-
-    /**
-     * Prepare an array for saving
-     */
-    protected function prepareArraytoSave(array $array) : array
-    {
-        assert(valid_num_args());
-
-        foreach ($array as $key => $value) {
-            if (is_array($value)) {
-                if (count($value) === 0) {
-                    $array[$key] = null;
-                } else {
-                    $array[$key] = $this->prepareArraytoSave($array[$key]);
-                }
-            } else {
-                $array[$key] = $value;
-            }
-        }
-
-        return $array;
     }
 }

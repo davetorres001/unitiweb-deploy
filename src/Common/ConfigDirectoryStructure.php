@@ -18,16 +18,16 @@ class ConfigDirectoryStructure
     protected $output;
 
     /**
-     * @var Config
+     * @var Env
      */
-    protected $config;
+    protected $env;
 
-    public function __construct(DeployOutput $output, Config $config)
+    public function __construct(DeployOutput $output, Env $env)
     {
         assert(valid_num_args());
 
         $this->output = $output;
-        $this->config = $config;
+        $this->env = $env;
     }
 
     /**
@@ -37,7 +37,7 @@ class ConfigDirectoryStructure
     {
         assert(valid_num_args());
 
-        $paths = $this->config->getPaths();
+        $paths = $this->env->getPaths();
         assert(array_key_exists('Root', $paths));
 
         if (null === $paths['Root']) {
@@ -87,7 +87,7 @@ class ConfigDirectoryStructure
     {
         assert(valid_num_args());
 
-        $paths = $this->config->getPaths();
+        $paths = $this->env->getPaths();
         assert(array_key_exists($pathName, $paths));
 
         $newPath = null;
@@ -144,7 +144,7 @@ class ConfigDirectoryStructure
     {
         assert(valid_num_args());
 
-        $paths = $this->config->getPaths();
+        $paths = $this->env->getPaths();
 
         $table = new Table($this->output->getOutput());
         $table
@@ -167,7 +167,7 @@ class ConfigDirectoryStructure
     {
         assert(valid_num_args());
 
-        $paths = $this->config->getPaths();
+        $paths = $this->env->getPaths();
         assert(array_key_exists('Root', $paths));
 
         if (null === ($paths['Root'] ?? null)) {

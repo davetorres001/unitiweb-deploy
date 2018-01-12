@@ -14,16 +14,16 @@ class DeployProcess
     protected $output;
 
     /**
-     * @var Config
+     * @var Env
      */
-    protected $config;
+    protected $env;
 
-    public function __construct(DeployOutput $output, Config $config)
+    public function __construct(DeployOutput $output, Env $env)
     {
         assert(valid_num_args());
 
         $this->output = $output;
-        $this->config = $config;
+        $this->env = $env;
     }
 
     /**
@@ -33,7 +33,7 @@ class DeployProcess
     {
         assert(valid_num_args());
 
-        $environment = $this->config->getEnvironment();
+        $environment = $this->env->getEnvironment();
         $timeout = $environment['ProcessTimeout'];
 
         if (null !== $workingDir) {

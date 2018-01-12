@@ -6,6 +6,7 @@ namespace Unitiweb\Deploy\Common\Process;
 use Unitiweb\Deploy\Common\Config;
 use Unitiweb\Deploy\Common\DeployOutput;
 use Unitiweb\Deploy\Common\DeployProcess;
+use Unitiweb\Deploy\Common\Env;
 
 class PermissionsProcess implements ProcessInterface
 {
@@ -13,6 +14,11 @@ class PermissionsProcess implements ProcessInterface
      * @var Config
      */
     protected $config;
+
+    /**
+     * @var Env
+     */
+    protected $env;
 
     /**
      * @var DeployOutput
@@ -29,13 +35,14 @@ class PermissionsProcess implements ProcessInterface
      */
     protected $prePost;
 
-    public function __construct(Config $config, DeployOutput $output, DeployProcess $process = null)
+    public function __construct(Config $config, Env $env, DeployOutput $output, DeployProcess $process = null)
     {
         assert(valid_num_args());
 
         $this->config = $config;
+        $this->env = $env;
         $this->output = $output;
-        $this->process = $process ?? new DeployProcess($output, $config);
+        $this->process = $process ?? new DeployProcess($output, $env);
     }
 
     /**
@@ -66,8 +73,8 @@ class PermissionsProcess implements ProcessInterface
         assert(valid_num_args());
         assert(in_array($this->prePost, ['Pre', 'Post']));
 
-        $release = $this->config->getCurrentReleasePath();
-        $environment = $this->config->getEnvironment();
+        $release = $this->env->getCurrentReleasePath();
+        $environment = $this->env->getEnvironment();
         $chown = $this->config->getChown();
         $chmod = $this->config->getChmod();
         $sudo = true === $environment['UseSudo'] ? 'sudo ' : '';

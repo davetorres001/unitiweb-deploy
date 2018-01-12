@@ -11,6 +11,7 @@ use Unitiweb\Deploy\Common\Config;
 use Unitiweb\Deploy\Common\ConfigDirectoryStructure;
 use Unitiweb\Deploy\Common\DeployContainerTrait;
 use Unitiweb\Deploy\Common\DeployOutput;
+use Unitiweb\Deploy\Common\Env;
 use Unitiweb\Deploy\Common\Process\CleanupReleasesProcess;
 use Unitiweb\Deploy\Common\Process\CopyRepoProcess;
 use Unitiweb\Deploy\Common\Process\GitHubPullProcess;
@@ -33,6 +34,11 @@ class DeployCommandBase extends Command
      * @var Config
      */
     protected $config;
+
+    /**
+     * @var Env
+     */
+    protected $env;
 
     /**
      * @var DeployOutput
@@ -76,12 +82,16 @@ class DeployCommandBase extends Command
         }
 
         // Load the configuration
-        $this->config = new Config($this->output, null, $this->configPath);
+        $this->env = new Env($this->output, null, $this->configPath);
+        $this->env->load();
+
+        // Load the configuration
+        $this->config = new Config($this->output, $this->configPath);
         $this->config->load();
         $this->processes = $this->config->getProcesses();
 
         // Check to make sure the release structure exists
-        $structure = new ConfigDirectoryStructure($this->output, $this->config);
+        $structure = new ConfigDirectoryStructure($this->output, $this->env);
         $structure->check();
 
         // Deploy Process
@@ -109,7 +119,7 @@ class DeployCommandBase extends Command
     {
         assert(valid_num_args());
 
-        $pull = new GitHubPullProcess($this->config, $this->output);
+        $pull = new GitHubPullProcess($this->config, $this->env, $this->output);
         $pull->execute();
     }
 
@@ -120,7 +130,7 @@ class DeployCommandBase extends Command
     {
         assert(valid_num_args());
 
-        $copy = new CopyRepoProcess($this->config, $this->output);
+        $copy = new CopyRepoProcess($this->config, $this->env, $this->output);
         $copy->execute();
     }
 
@@ -131,7 +141,7 @@ class DeployCommandBase extends Command
     {
         assert(valid_num_args());
 
-        $permissions = new PermissionsProcess($this->config, $this->output);
+        $permissions = new PermissionsProcess($this->config, $this->env, $this->output);
         $permissions->setPre();
         $permissions->execute();
     }
@@ -143,7 +153,7 @@ class DeployCommandBase extends Command
     {
         assert(valid_num_args());
 
-        $symlinks = new SymlinksProcess($this->config, $this->output);
+        $symlinks = new SymlinksProcess($this->config, $this->env, $this->output);
         $symlinks->execute();
     }
 
@@ -154,7 +164,7 @@ class DeployCommandBase extends Command
     {
         assert(valid_num_args());
 
-        $remove = new RemoveProcess($this->config, $this->output);
+        $remove = new RemoveProcess($this->config, $this->env, $this->output);
         $remove->execute();
     }
 
@@ -178,11 +188,11 @@ class DeployCommandBase extends Command
 
         $this->deployProcesses('Live', 'Pre');
 
-        $permissions = new PermissionsProcess($this->config, $this->output);
+        $permissions = new PermissionsProcess($this->config, $this->env, $this->output);
         $permissions->setPost();
         $permissions->execute();
 
-        $live = new MakeLiveProcess($this->config, $this->output);
+        $live = new MakeLiveProcess($this->config, $this->env, $this->output);
         $live->execute();
 
         $this->deployProcesses('Live', 'Post');
@@ -197,7 +207,7 @@ class DeployCommandBase extends Command
 
         $this->deployProcesses('Cleanup', 'Pre');
 
-        $cleanup = new CleanupReleasesProcess($this->config, $this->output);
+        $cleanup = new CleanupReleasesProcess($this->config, $this->env, $this->output);
         $cleanup->execute();
 
         $this->deployProcesses('Cleanup', 'Post');
@@ -210,8 +220,7 @@ class DeployCommandBase extends Command
     {
         assert(valid_num_args());
 
-        $env = $this->config->getEnvironment();
-        $namespace = $env['Namespace'] ?? '';
+        $namespace = $this->config->getNamespace();
 
         if (substr($namespace, -1) !== '\\') {
             $namespace = $namespace . '\\';
@@ -219,7 +228,7 @@ class DeployCommandBase extends Command
 
         foreach ($this->processes[$stage][$prePost] as $class) {
             $fullClass = $namespace . 'Process\\' . $class;
-            $process = new $fullClass($this->config, $this->output);
+            $process = new $fullClass($this->config, $this->env, $this->output);
             assert($process instanceof ProcessInterface);
             $process->execute();
         }
