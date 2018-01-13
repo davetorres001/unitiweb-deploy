@@ -62,10 +62,6 @@ class MakeLiveProcess implements ProcessInterface
 
         $this->process->run("rm $destination");
 
-        if (substr($source, -1) === '/') {
-            $source = substr($source, 0, -1);
-        }
-
         if (substr($source, 0, 3) === '../') {
             $source = substr($source, 3);
         }

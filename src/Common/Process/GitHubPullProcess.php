@@ -55,12 +55,15 @@ class GitHubPullProcess implements ProcessInterface
 
         if (!is_dir($repoPath . '.git')) {
             $this->process->run('git init', $repoPath);
-            $this->process->run("git remote add {$github['Remote']} {$github['Repo']}", $repoPath);
+        }
+
+        if (false === $this->hasRemote($repoPath)) {
+            $this->process->run("git remote add origin {$github['Repo']}", $repoPath);
         }
 
         // Fetch all releases
-        $this->process->run("git checkout master", $repoPath);
         $this->process->run("git fetch --all", $repoPath);
+        $this->process->run("git checkout master", $repoPath);
         $this->output->line();
 
         if (null !== ($release = $this->askForTag($repoPath))) {
@@ -76,6 +79,34 @@ class GitHubPullProcess implements ProcessInterface
         }
 
         $this->output->line('yellow');
+    }
+
+    /**
+     * List Repo remotes
+     */
+    protected function hasRemote(string $path) : bool
+    {
+        assert(valid_num_args());
+
+        $remotes = [];
+
+        $process = new Process("cd $path && git remote -v");
+        $process->run();
+        $lines = explode("\n", $process->getOutput());
+
+        $i = 1;
+        foreach ($lines as $line) {
+            $line = trim($line);
+            if ($line !== '') {
+                if (substr($line, 0, 2) === '* ') {
+                    $line = substr($line, 2);
+                }
+                $remotes[$i] = $line;
+                $i++;
+            }
+        }
+
+        return count($remotes) > 0 ? true : false;
     }
 
     /**
@@ -213,6 +244,7 @@ class GitHubPullProcess implements ProcessInterface
 
         return $branches;
     }
+
     /**
      * Generate branches table
      */
