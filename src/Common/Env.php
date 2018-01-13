@@ -94,7 +94,7 @@ class Env
 
         $paths = $this->getPaths();
 
-        return $paths['Releases'] . $this->getCurrent() . '/';
+        return $this->getReleasesPath() . $this->getCurrent() . '/';
     }
 
     /**
