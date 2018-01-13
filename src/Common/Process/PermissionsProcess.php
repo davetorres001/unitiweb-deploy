@@ -86,7 +86,6 @@ class PermissionsProcess implements ProcessInterface
                 $chown[$this->prePost]['Group'],
                 $release . $path
             );
-            $this->output->writeln("UseSudo : " . $this->env->getUseSudo());
             $this->output->writeln($command);
             $this->process->run($command, null, $this->env->getUseSudo());
         }
@@ -102,7 +101,6 @@ class PermissionsProcess implements ProcessInterface
                 $chmod[$this->prePost]['Permission'],
                 $release . $path
             );
-            $this->output->writeln("UseSudo : " . $this->env->getUseSudo());
             $this->output->writeln($command);
             $this->process->run($command, null, $this->env->getUseSudo());
         }

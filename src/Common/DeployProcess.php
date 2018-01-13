@@ -32,15 +32,19 @@ class DeployProcess
     {
         assert(valid_num_args());
 
+        $array = [];
+
         if (null !== $workingDir) {
-            if (true === $sudo) {
-                $command = "cd $workingDir && sudo $command";
-            } else {
-                $command = "cd $workingDir && $command";
-            }
+            array_push($array, "cd $workingDir &&");
         }
 
-        $process = new Process($command);
+        if (true === $sudo) {
+            array_push($array, 'sudo');
+        }
+
+        array_push($array, $command);
+
+        $process = new Process(implode(' ', $array));
         $process->start();
         if ($this->env->getProcessTimeout() > 0) {
             $process->setTimeout($this->env->getProcessTimeout());
