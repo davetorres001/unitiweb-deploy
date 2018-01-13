@@ -159,7 +159,8 @@ class Env
 
         $environment['UseSudo'] = false;
         if (isset($this->env['Environment']['UseSudo'])) {
-            if ($this->env['Environment']['UseSudo'] === 'true' || $this->env['Environment']['UseSudo'] === true || $this->env['Environment']['UseSudo'] === 1) {
+            $sudo = $this->env['Environment']['UseSudo'];
+            if ($sudo === 'true' || $sudo === true || $sudo === 1) {
                 $environment['UseSudo'] = true;
             }
         }
