@@ -50,6 +50,10 @@ class RemoveProcess implements ProcessInterface
         $release = $this->env->getCurrentReleasePath();
         $remove = $this->config->getRemove();
 
+        if (count($remove) === 0) {
+            return;
+        }
+
         $this->output->header('Remove Unwanted Files');
 
         foreach ($remove as $file) {

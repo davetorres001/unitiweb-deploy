@@ -77,35 +77,39 @@ class PermissionsProcess implements ProcessInterface
         $chown = $this->config->getChown();
         $chmod = $this->config->getChmod();
 
-        $this->output->header("{$this->prePost} Chown");
+        if (count($chown[$this->prePost]['Paths']) > 0) {
+            $this->output->header("{$this->prePost} Chown");
 
-        foreach ($chown[$this->prePost]['Paths'] as $path) {
-            $command = $this->makeCommand(
-                'chown',
-                is_dir($release . $path) ? '-R' : '',
-                $chown[$this->prePost]['Group'],
-                $release . $path
-            );
-            $this->output->writeln($command);
-            $this->process->run($command, null, $this->env->getUseSudo());
+            foreach ($chown[$this->prePost]['Paths'] as $path) {
+                $command = $this->makeCommand(
+                    'chown',
+                    is_dir($release . $path) ? '-R' : '',
+                    $chown[$this->prePost]['Group'],
+                    $release . $path
+                );
+                $this->output->writeln($command);
+                $this->process->run($command, null, $this->env->getUseSudo());
+            }
+
+            $this->output->line('yellow');
         }
 
-        $this->output->line('yellow');
+        if (count($chmod[$this->prePost]['Paths']) > 0) {
+            $this->output->header("{$this->prePost} Chmod");
 
-        $this->output->header("{$this->prePost} Chmod");
+            foreach ($chmod[$this->prePost]['Paths'] as $path) {
+                $command = $this->makeCommand(
+                    'chmod',
+                    is_dir($release . $path) ? '-R' : '',
+                    $chmod[$this->prePost]['Permission'],
+                    $release . $path
+                );
+                $this->output->writeln($command);
+                $this->process->run($command, null, $this->env->getUseSudo());
+            }
 
-        foreach ($chmod[$this->prePost]['Paths'] as $path) {
-            $command = $this->makeCommand(
-                'chmod',
-                is_dir($release . $path) ? '-R' : '',
-                $chmod[$this->prePost]['Permission'],
-                $release . $path
-            );
-            $this->output->writeln($command);
-            $this->process->run($command, null, $this->env->getUseSudo());
+            $this->output->line('yellow');
         }
-
-        $this->output->line('yellow');
     }
 
     /**

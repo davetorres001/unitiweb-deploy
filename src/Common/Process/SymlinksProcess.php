@@ -49,6 +49,10 @@ class SymlinksProcess implements ProcessInterface
 
         $release = $this->env->getCurrentReleasePath();
 
+        if (count($this->config->getShared()) === 0) {
+            return;
+        }
+
         $this->output->header('Create Shared Symlinks');
 
         foreach ($this->config->getShared() as $file) {
