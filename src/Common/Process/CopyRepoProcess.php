@@ -55,8 +55,9 @@ class CopyRepoProcess implements ProcessInterface
         $this->output->writeln('Create release directory');
         $this->process->run("mkdir $release");
 
-        $this->output->writeln('Copying files over');
-        $this->process->run("cp -a {$this->env->getRepoPath()}/* $release");
+        $source = $this->env->getRepoPath() . '*';
+        $this->output->writeln("Copying files over $source to $release");
+        $this->process->run("cp -a {$this->env->getRepoPath()}* $release");
 
         $this->env->setCurrent($directory);
         $this->env->save();
