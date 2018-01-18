@@ -126,6 +126,7 @@ class DeployConfigCommand extends Command
 
         $this->askEnvironment();
         $this->askPaths();
+        $this->askGit();
 
         if (true === $this->askSave()) {
             $this->output->header('Configuration Saved');
@@ -239,6 +240,36 @@ class DeployConfigCommand extends Command
     }
 
     /**
+     * Ask for Git settings
+     */
+    protected function askGit()
+    {
+        assert(valid_num_args());
+
+        $this->showPage();
+
+        $this->output->header('Git Settings');
+        $this->output->subHeader('Settings related to the git tags and branches');
+        $this->question->ask([
+            'Tag Filter' => $this->env->getGitTagFilter(),
+//            'Branch Filter' => $this->env->getGitBranchFilter()
+        ], [
+            'Tag Filter' => [
+                'description' => 'The filter used when getting the list of tags (example: *alpha*, *beta*, 1.0.0-alpha*',
+                'type' => 'string',
+                'nullable' => true,
+                'callable' => function($key, $value) { $this->env->setGitTagFilter($value); },
+            ],
+//            'Branch Filter' => [
+//                'description' => 'The filter used when getting the list of branches (example: master, 1.1.*)',
+//                'type' => 'string',
+//                'nullable' => true,
+//                'callable' => function($key, $value) { $this->env->setGitBranchFilter($value); },
+//            ]
+        ]);
+    }
+
+    /**
      * Ask to save
      */
     protected function askSave() : bool
@@ -308,6 +339,12 @@ class DeployConfigCommand extends Command
         foreach (['Root', 'Repo', 'Releases', 'Shared'] as $key) {
             $rows[] = ['', "$key:", new TableCell((string) $paths[$key], ['colspan' => 2])];
         }
+
+        $rows[] = new TableSeparator();
+        $rows[] = [new TableCell('<info>Git</info>', ['colspan' => 4])];
+        $rows[] = new TableSeparator();
+        $rows[] = ['', 'Tag Filter: ', new TableCell((string) $this->env->getGitTagFilter(), ['colspan' => 2])];
+//        $rows[] = ['', 'Branch Filter: ', new TableCell((string) $this->env->getGitBranchFilter(), ['colspan' => 2])];
 
         $table->setRows($rows);
         $table->setStyle('compact');

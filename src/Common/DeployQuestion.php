@@ -45,8 +45,7 @@ class DeployQuestion
             $default = $setting['default'] ?? null;
             $options = $setting['options'] ?? null;
 
-            $done = false;
-            while (false === $done) {
+            while (true) {
                 $question = $this->makeQuestion($key, $options, $value, $default);
                 $answer = $this->output->ask($question, $value);
 
@@ -56,7 +55,8 @@ class DeployQuestion
                         $this->output->writeln('   ' . $setting['description']);
                     }
                 } else {
-                    $done = $this->processAnswer($key, $answer, $type, $value, $default, $callable, $nullable, $validate);
+                    $this->processAnswer($key, $answer, $type, $value, $default, $callable, $nullable, $validate);
+                    break;
                 }
             }
         }

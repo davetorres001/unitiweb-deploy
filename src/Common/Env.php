@@ -264,6 +264,63 @@ class Env
     }
 
     /**
+     * Get git settings
+     */
+    public function getGit() : array
+    {
+        assert(valid_num_args());
+
+        return [
+            'Tag' => [
+                'Filter' => $this->env['Tag']['Filter'] ?? '*',
+            ],
+//            'Branch' => [
+//                'Filter' => $this->env['Branch']['Filter'] ?? '*',
+//            ]
+        ];
+    }
+
+    /**
+     * Get git tag filter
+     */
+    public function getGitTagFilter() : string
+    {
+        assert(valid_num_args());
+
+        return $this->env['Git']['Tag']['Filter'] ?? '*';
+    }
+
+    /**
+     * Get git branch filter
+     */
+//    public function getGitBranchFilter() : string
+//    {
+//        assert(valid_num_args());
+//
+//        return $this->env['Git']['Branch']['Filter'] ?? '*';
+//    }
+
+    /**
+     * Set Git Tag Filter
+     */
+    public function setGitTagFilter(?string $filter)
+    {
+        assert(valid_num_args());
+
+        $this->env['Tag']['Filter'] = $filter ?? '*';
+    }
+
+    /**
+     * Set Git Branch Filter
+     */
+//    public function setGitBranchFilter(?string $filter)
+//    {
+//        assert(valid_num_args());
+//
+//        $this->env['Branch']['Filter'] = $filter ?? '*';
+//    }
+
+    /**
      * Get root path
      */
     public function getRootPath() : string
@@ -322,6 +379,7 @@ class Env
             'Current' => $this->getCurrent(),
             'Environment' => $this->getEnvironment(),
             'Paths' => $this->getPaths(),
+            'Git' => $this->getGit(),
         ];
 
         return ['Deploy' => $config];
