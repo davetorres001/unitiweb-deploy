@@ -250,9 +250,9 @@ class DeployConfigCommand extends Command
 
         $this->output->header('Git Settings');
         $this->output->subHeader('Settings related to the git tags and branches');
+        $this->output->subHeader("If you don't want to use a filter just set it to *");
         $this->question->ask([
             'Tag Filter' => $this->env->getGitTagFilter(),
-//            'Branch Filter' => $this->env->getGitBranchFilter()
         ], [
             'Tag Filter' => [
                 'description' => 'The filter used when getting the list of tags (example: *alpha*, *beta*, 1.0.0-alpha*',
@@ -260,12 +260,6 @@ class DeployConfigCommand extends Command
                 'nullable' => true,
                 'callable' => function($key, $value) { $this->env->setGitTagFilter($value); },
             ],
-//            'Branch Filter' => [
-//                'description' => 'The filter used when getting the list of branches (example: master, 1.1.*)',
-//                'type' => 'string',
-//                'nullable' => true,
-//                'callable' => function($key, $value) { $this->env->setGitBranchFilter($value); },
-//            ]
         ]);
     }
 

@@ -147,7 +147,12 @@ class GitHubPullProcess implements ProcessInterface
 
         $tags = [];
 
-        $process = new Process("cd $path && git tag -l {$this->env->getGitTagFilter()} --sort=-v:refname");
+        $filter = $this->env->getGitTagFilter();
+        if ($filter === '*') {
+            $filter = '';
+        }
+
+        $process = new Process("cd $path && git tag -l $filter --sort=-v:refname");
         $process->run();
         $lines = explode("\n", $process->getOutput());
 
